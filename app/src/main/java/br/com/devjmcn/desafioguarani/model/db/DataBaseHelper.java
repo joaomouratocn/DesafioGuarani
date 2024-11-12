@@ -14,27 +14,28 @@ import javax.inject.Inject;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
-    private static final String DB_NAME = "database/bancomovel.db";
+    private static final String DB_NAME = "bancomovel.db";
     private static final int DB_VERSION = 1;
     private static String DB_PATH = "";
     private final Context context;
-    private SQLiteDatabase  DB;
+    private SQLiteDatabase DB;
 
     @Inject
-    public DataBaseHelper(@ApplicationContext Context context){
+    public DataBaseHelper(@ApplicationContext Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
         DB_PATH = context.getApplicationInfo().dataDir + "/database/";
     }
 
     public SQLiteDatabase openDatabase() {
+        createDB();
         if (DB == null || !DB.isOpen()) {
             DB = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
         }
         return DB;
     }
 
-    public void createDB(){
+    public void createDB() {
         boolean dbExists = checkDataBase();
         if (!dbExists) {
             this.getReadableDatabase();
@@ -52,7 +53,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
                 output.write(buffer, 0, length);
             }
         } catch (Exception e) {
-            throw new RuntimeException("Erro ao importar banco de dados!!", e);
+            throw new RuntimeException(e.getMessage());
         }
     }
 
