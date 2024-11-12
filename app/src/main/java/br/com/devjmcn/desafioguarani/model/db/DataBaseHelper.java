@@ -1,4 +1,4 @@
-package br.com.devjmcn.desafioguarani.model;
+package br.com.devjmcn.desafioguarani.model.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -9,6 +9,10 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
+
 public class DataBaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "database/bancomovel.db";
     private static final int DB_VERSION = 1;
@@ -16,7 +20,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     private final Context context;
     private SQLiteDatabase  DB;
 
-    public DataBaseHelper(Context context){
+    @Inject
+    public DataBaseHelper(@ApplicationContext Context context){
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
         DB_PATH = context.getApplicationInfo().dataDir + "/database/";
