@@ -3,4 +3,16 @@
     <string name="str_products">Products</string>
     <string name="str_search_products">Search Products</string>
     <string name="str_search_button">Search buttom</string>
+    <string name="str_stock">STOCK</string>
+    <string name="str_invalid_value">Invalid value</string>
+    <string name="str_release">RELEASE</string>
+    <string name="str_normal">NORMAL</string>
+    <string name="str_promotion">PROMOTION</string>
+    <string name="str_select_status_product">Select status product: </string>
+    <string name="str_price_min">"Price min: R$ %1$s</string>
+    <string name="str_price_max">"Price max: R$ %1$s</string>
+    <string name="str_stock_value">"Amount: %1$s</string>
+    <string name="str_cod_value">"Amount: %1$s</string>
+    <string name="str_all_price">All price</string>
+    <string name="str_button_close">Button close</string>
 </resources>

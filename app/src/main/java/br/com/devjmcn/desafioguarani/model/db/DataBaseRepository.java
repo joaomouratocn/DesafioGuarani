@@ -4,12 +4,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import br.com.devjmcn.desafioguarani.model.Repository;
 import br.com.devjmcn.desafioguarani.model.models.Clients;
+import br.com.devjmcn.desafioguarani.model.models.Product;
 import io.reactivex.rxjava3.core.Observable;
 
 public class DataBaseRepository implements Repository {
@@ -28,27 +30,96 @@ public class DataBaseRepository implements Repository {
 
             String query = "SELECT DISTINCT PRO_STATUS FROM GUA_PRODUTOS";
 
-            try(SQLiteDatabase db = dataBaseHelper.getDatabase()){
+            try {
+                SQLiteDatabase db = dataBaseHelper.getDatabase();
                 Cursor cursor = db.rawQuery(query, null);
 
-                if (cursor != null && cursor.getCount() > 0){
+                if (cursor != null && cursor.getCount() > 0) {
                     int columnStatus = cursor.getColumnIndexOrThrow("PRO_STATUS");
-                    while (cursor.moveToNext()){
+                    while (cursor.moveToNext()) {
                         String prodStatus = cursor.getString(columnStatus);
                         prodStatusList.add(prodStatus);
                     }
                 }
                 cursor.close();
-                if (!emitter.isDisposed()) {
-                    emitter.onNext(prodStatusList);
-                    emitter.onComplete();
-                }
-            }catch (Exception e){
-                if (!emitter.isDisposed()) {
-                    emitter.onError(e);
-                }
+
+                emitter.onNext(prodStatusList);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
             }
         });
+    }
+
+    @Override
+    public Observable<List<Product>> getProductsByName(String selected, String name) {
+        return Observable.create(emitter -> {
+            List<Product> productList = new ArrayList<>();
+
+            String query = "SELECT A.PRO_CODIGO, A.PRO_DESCRICAO, B.ESE_ESTOQUE FROM GUA_PRODUTOS as A " +
+                    "INNER JOIN GUA_ESTOQUEEMPRESA as B ON A.PRO_CODIGO = B.ESE_CODIGO " +
+                    "WHERE A.PRO_STATUS = ? AND A.PRO_DESCRICAO LIKE ?";
+
+            try {
+                SQLiteDatabase db = dataBaseHelper.getDatabase();
+                Cursor cursor = db.rawQuery(query, new String[]{selected, "%" + name + "%"});
+
+                if (cursor != null && cursor.getCount() > 0) {
+                    int columnCod = cursor.getColumnIndex("PRO_CODIGO");
+                    int columnDesc = cursor.getColumnIndex("PRO_DESCRICAO");
+                    int columnStock = cursor.getColumnIndex("ESE_ESTOQUE");
+
+                    while (cursor.moveToNext()){
+                        String cod = cursor.getString(columnCod);
+                        String desc = cursor.getString(columnDesc);
+                        Double stock = cursor.getDouble(columnStock);
+
+                        Product product = new Product(cod, desc, stock, Collections.emptyList());
+
+                        productList.add(product);
+                    }
+                }
+                cursor.close();
+
+                List<Product> productsWithPrice = insertPrices(productList);
+
+                emitter.onNext(productsWithPrice);
+                emitter.onComplete();
+            } catch (Exception e) {
+                emitter.onError(e);
+            }
+        });
+    }
+
+    private List<Product> insertPrices(List<Product> productList) {
+        List<Product> productWithPrices = new ArrayList<>();
+
+        String query = "SELECT PRP_PRECOS FROM GUA_PRECOS WHERE PRP_CODIGO = ? ORDER BY PRP_PRECOS ASC";
+
+        try{
+            SQLiteDatabase db = dataBaseHelper.getDatabase();
+
+            for (Product product: productList) {
+                List<String> listPrice = new ArrayList<>();
+                Cursor cursor = db.rawQuery(query, new String[]{product.getCod()});
+                int columnPrice = cursor.getColumnIndexOrThrow("PRP_PRECOS");
+
+                if (cursor.getCount() > 0){
+                    while (cursor.moveToNext()){
+                        String price = cursor.getString(columnPrice);
+
+                        listPrice.add(price);
+                    }
+                }
+                Product productWithPrice = product.copy(product, listPrice);
+                productWithPrices.add(productWithPrice);
+                cursor.close();
+            }
+            return productWithPrices;
+
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -58,7 +129,9 @@ public class DataBaseRepository implements Repository {
 
             String query = "SELECT * FROM GUA_CLIENTES WHERE CLI_RAZAOSOCIAL LIKE ?";
 
-            try(SQLiteDatabase db = dataBaseHelper.getDatabase()){
+
+            try {
+                SQLiteDatabase db = dataBaseHelper.getDatabase();
                 Cursor cursor = db.rawQuery(query, new String[]{"%" + status + "%"});
 
                 if (cursor != null && cursor.getCount() > 0) {
@@ -99,14 +172,12 @@ public class DataBaseRepository implements Repository {
 
                 }
                 cursor.close();
-                if (!emitter.isDisposed()) {
-                    emitter.onNext(clientList);
-                    emitter.onComplete();
-                }
+
+                emitter.onNext(clientList);
+                emitter.onComplete();
+
             } catch (Exception e) {
-                if (!emitter.isDisposed()) {
-                    emitter.onError(e);
-                }
+                emitter.onError(e);
             }
         });
     }

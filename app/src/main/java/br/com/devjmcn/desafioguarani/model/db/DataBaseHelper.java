@@ -3,6 +3,7 @@ package br.com.devjmcn.desafioguarani.model.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,7 +25,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public DataBaseHelper(@ApplicationContext Context context) {
         super(context, DB_NAME, null, DB_VERSION);
         this.context = context;
-        DB_PATH = context.getApplicationInfo().dataDir + "/database/";
+        DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
     }
 
     public SQLiteDatabase getDatabase() {
@@ -38,6 +39,11 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     public void createDB() {
         boolean dbExists = checkDataBase();
         if (!dbExists) {
+            File databaseDir = new File(DB_PATH);
+            if (!databaseDir.exists()) {
+                databaseDir.mkdir();
+            }
+
             this.getReadableDatabase();
             copyDB();
         }
@@ -52,14 +58,23 @@ public class DataBaseHelper extends SQLiteOpenHelper {
             while ((length = input.read(buffer)) > 0) {
                 output.write(buffer, 0, length);
             }
+            Log.d("DataBaseHelper", "Banco copiado com sucesso para: " + DB_PATH + DB_NAME);
+
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            Log.e("DataBaseHelper", "Erro ao copiar o banco: " + e.getMessage());
+            throw new RuntimeException("Erro ao copiar o banco: " + e.getMessage());
         }
     }
 
     private boolean checkDataBase() {
         File dbFile = new File(DB_PATH + DB_NAME);
         return dbFile.exists();
+    }
+
+    public void closeDatabase() {
+        if (DB != null && DB.isOpen()) {
+            DB.close();
+        }
     }
 
     @Override

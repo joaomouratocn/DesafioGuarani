@@ -10,16 +10,16 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import br.com.devjmcn.desafioguarani.R;
-import br.com.devjmcn.desafioguarani.databinding.ActivityClientsBinding;
+import br.com.devjmcn.desafioguarani.databinding.ActivityClientBinding;
 
 public class ClientsActivity extends AppCompatActivity {
-    private ActivityClientsBinding binding;
+    private ActivityClientBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        binding = ActivityClientsBinding.inflate(getLayoutInflater());
+        binding = ActivityClientBinding.inflate(getLayoutInflater());
         View view = binding.getRoot();
         setContentView(view);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

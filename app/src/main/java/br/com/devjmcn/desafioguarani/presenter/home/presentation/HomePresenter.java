@@ -2,8 +2,6 @@ package br.com.devjmcn.desafioguarani.presenter.home.presentation;
 
 import static br.com.devjmcn.desafioguarani.presenter.home.HomeContract.HomeViewContract;
 
-import android.util.Log;
-
 import javax.inject.Inject;
 
 import br.com.devjmcn.desafioguarani.model.Repository;
@@ -33,18 +31,25 @@ public class HomePresenter implements HomeContract.HomePresenterContract {
     }
 
     @Override
-    public void getStatus() {
+    public void getProdStatus() {
         disposable = repository.getProductStatus().subscribe(
-            prodStatus -> {
-                homeViewContract.loadProdStatus(prodStatus);
-                Log.d("prod", prodStatus.get(0));
-            },
-            throwable -> {
-                // Trata o erro
-            },
-            () -> {
-                // Concluído
-            }
+                prodStatus -> {
+                    homeViewContract.loadProdStatus(prodStatus);
+                },
+                throwable -> {
+                    homeViewContract.showToast(throwable.getMessage());
+                },
+                () -> {
+                    String selectedStatus = homeViewContract.getStatusSelected();
+                    disposable = repository.getProductsByName(selectedStatus, "").subscribe(
+                        products -> {
+                            homeViewContract.setProducts(products);
+                        },
+                        throwable -> {
+                            homeViewContract.showToast(throwable.getMessage());
+                        }
+                    );
+                }
         );
     }
 }

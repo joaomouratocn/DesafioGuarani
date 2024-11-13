@@ -2,7 +2,7 @@ package br.com.devjmcn.desafioguarani.presenter.home;
 
 import java.util.List;
 
-import io.reactivex.rxjava3.core.Observable;
+import br.com.devjmcn.desafioguarani.model.models.Product;
 
 public interface HomeContract {
     public interface HomePresenterContract {
@@ -10,10 +10,16 @@ public interface HomeContract {
 
         void detachView();
 
-        void getStatus();
+        void getProdStatus();
     }
 
     public interface HomeViewContract {
         void loadProdStatus(List<String> prodStatus);
+
+        void showToast(String message);
+
+        String getStatusSelected();
+
+        void setProducts(List<Product> products);
     }
 }
