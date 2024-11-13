@@ -22,15 +22,44 @@ public class DataBaseRepository implements Repository {
     }
 
     @Override
+    public Observable<List<String>> getProductStatus() {
+        return Observable.create(emitter -> {
+            List<String> prodStatusList = new ArrayList<>();
+
+            String query = "SELECT DISTINCT PRO_STATUS FROM GUA_PRODUTOS";
+
+            try(SQLiteDatabase db = dataBaseHelper.getDatabase()){
+                Cursor cursor = db.rawQuery(query, null);
+
+                if (cursor != null && cursor.getCount() > 0){
+                    int columnStatus = cursor.getColumnIndexOrThrow("PRO_STATUS");
+                    while (cursor.moveToNext()){
+                        String prodStatus = cursor.getString(columnStatus);
+                        prodStatusList.add(prodStatus);
+                    }
+                }
+                cursor.close();
+                if (!emitter.isDisposed()) {
+                    emitter.onNext(prodStatusList);
+                    emitter.onComplete();
+                }
+            }catch (Exception e){
+                if (!emitter.isDisposed()) {
+                    emitter.onError(e);
+                }
+            }
+        });
+    }
+
+    @Override
     public Observable<List<Clients>> getAllClients(String status) {
         return Observable.create(emitter -> {
             List<Clients> clientList = new ArrayList<>();
 
             String query = "SELECT * FROM GUA_CLIENTES WHERE CLI_RAZAOSOCIAL LIKE ?";
 
-            try (SQLiteDatabase db = dataBaseHelper.openDatabase()) {
-
-                Cursor cursor = db.rawQuery(query, new String[]{"%"+status+"%"});
+            try(SQLiteDatabase db = dataBaseHelper.getDatabase()){
+                Cursor cursor = db.rawQuery(query, new String[]{"%" + status + "%"});
 
                 if (cursor != null && cursor.getCount() > 0) {
                     int columnCod = cursor.getColumnIndexOrThrow("CLI_CODIGOCLIENTE");
@@ -70,11 +99,15 @@ public class DataBaseRepository implements Repository {
 
                 }
                 cursor.close();
-                emitter.onNext(clientList);
-                emitter.onComplete();
+                if (!emitter.isDisposed()) {
+                    emitter.onNext(clientList);
+                    emitter.onComplete();
+                }
             } catch (Exception e) {
-                emitter.onError(e);
-            }:
+                if (!emitter.isDisposed()) {
+                    emitter.onError(e);
+                }
+            }
         });
     }
 }

@@ -27,7 +27,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         DB_PATH = context.getApplicationInfo().dataDir + "/database/";
     }
 
-    public SQLiteDatabase openDatabase() {
+    public SQLiteDatabase getDatabase() {
         createDB();
         if (DB == null || !DB.isOpen()) {
             DB = SQLiteDatabase.openDatabase(DB_PATH + DB_NAME, null, SQLiteDatabase.OPEN_READWRITE);
