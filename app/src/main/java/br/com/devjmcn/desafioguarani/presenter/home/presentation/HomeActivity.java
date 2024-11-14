@@ -1,18 +1,24 @@
 package br.com.devjmcn.desafioguarani.presenter.home.presentation;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static br.com.devjmcn.desafioguarani.presenter.home.HomeContract.HomePresenterContract;
 import static br.com.devjmcn.desafioguarani.presenter.home.HomeContract.HomeViewContract;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
+import androidx.core.view.GravityCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -28,6 +34,7 @@ import br.com.devjmcn.desafioguarani.R;
 import br.com.devjmcn.desafioguarani.databinding.ActivityHomeBinding;
 import br.com.devjmcn.desafioguarani.databinding.DialogPriceBinding;
 import br.com.devjmcn.desafioguarani.model.models.Product;
+import br.com.devjmcn.desafioguarani.presenter.clients.presentation.ClientsActivity;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -54,20 +61,67 @@ public class HomeActivity extends AppCompatActivity implements HomeViewContract 
     }
 
     private void initConfig() {
+        binding.navigationView.setNavigationItemSelectedListener(menuItem -> {
+            if (menuItem.getItemId() == R.id.nav_clients) {
+                Intent intent = new Intent(HomeActivity.this, ClientsActivity.class);
+                startActivity(intent);
+            }
+            binding.drawerLayout.closeDrawer(GravityCompat.START);
+            return true;
+        });
+
+
+        setSupportActionBar(binding.tlbClient);
+        binding.tlbClient.setNavigationIcon(R.drawable.menu_line);
+        binding.tlbClient.setNavigationOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
+
+        binding.btnSearch.setOnClickListener(view -> {
+            if (binding.edtSearchProduct.getText().toString().isEmpty()) {
+                showToast(getString(R.string.str_invalid_text_field));
+                return;
+            }
+            String search = binding.edtSearchProduct.getText().toString();
+            String spinnerSelected = getStatusSelected();
+            homePresenterContract.searchProduct(search, spinnerSelected);
+        });
+
         adapter = new HomeAdapter(product -> {
             showPriceDialog(product.getPrices());
         });
 
         binding.rcvClients.setAdapter(adapter);
         binding.rcvClients.setLayoutManager(new LinearLayoutManager(this));
+
+        binding.spnStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selected = adapterView.getItemAtPosition(i).toString();
+                selected = getStringBd(selected);
+                homePresenterContract.searchProduct("", selected);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
         homePresenterContract.attachView(this);
-        homePresenterContract.getProdStatus();
+        homePresenterContract.loadProductStatus();
     }
 
     @Override
     protected void onDestroy() {
         homePresenterContract.detachView();
         super.onDestroy();
+    }
+
+    @Override
+    public void showLoad(Boolean show) {
+        if (show) {
+            binding.lnlLoad.setVisibility(VISIBLE);
+        } else {
+            binding.lnlLoad.setVisibility(GONE);
+        }
     }
 
     @Override
@@ -123,6 +177,9 @@ public class HomeActivity extends AppCompatActivity implements HomeViewContract 
 
     @Override
     public void setProducts(List<Product> products) {
+        if (products.isEmpty()) {
+            showToast(getString(R.string.str_nothing_found));
+        }
         adapter.submitList(products);
     }
 

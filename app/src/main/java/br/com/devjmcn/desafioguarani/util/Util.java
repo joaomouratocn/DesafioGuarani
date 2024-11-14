@@ -4,7 +4,9 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class Util {
-    public static NumberFormat numberFormat(){
-        return NumberFormat.getCurrencyInstance(Locale.getDefault());
+    public static String numberFormat(String value){
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(Locale.getDefault());
+        double valor = Double.parseDouble(value);
+        return numberFormat.format(valor);
     }
 }

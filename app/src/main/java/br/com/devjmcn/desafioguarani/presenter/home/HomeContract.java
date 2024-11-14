@@ -5,15 +5,20 @@ import java.util.List;
 import br.com.devjmcn.desafioguarani.model.models.Product;
 
 public interface HomeContract {
-    public interface HomePresenterContract {
+    interface HomePresenterContract {
         void attachView(HomeViewContract homeViewContract);
 
         void detachView();
 
-        void getProdStatus();
+        void loadProductStatus();
+
+        void searchProduct(String search, String selectedStatus);
     }
 
-    public interface HomeViewContract {
+    interface HomeViewContract {
+
+        void showLoad(Boolean show);
+
         void loadProdStatus(List<String> prodStatus);
 
         void showToast(String message);

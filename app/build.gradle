@@ -46,6 +46,8 @@ dependencies {
     //RXJAVA
     implementation libs.rxjava
     implementation libs.rxandroid
+    //NAVIGATION DRAWER
+    implementation libs.drawerlayout
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit

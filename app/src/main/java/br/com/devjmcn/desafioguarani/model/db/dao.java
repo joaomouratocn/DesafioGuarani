@@ -1,5 +1,7 @@
 package br.com.devjmcn.desafioguarani.model.db;
 
+import static br.com.devjmcn.desafioguarani.util.Util.numberFormat;
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -14,12 +16,12 @@ import br.com.devjmcn.desafioguarani.model.models.Clients;
 import br.com.devjmcn.desafioguarani.model.models.Product;
 import io.reactivex.rxjava3.core.Observable;
 
-public class DataBaseRepository implements Repository {
+public class dao implements Repository {
 
     private final DataBaseHelper dataBaseHelper;
 
     @Inject
-    public DataBaseRepository(DataBaseHelper dataBaseHelper) {
+    public dao(DataBaseHelper dataBaseHelper) {
         this.dataBaseHelper = dataBaseHelper;
     }
 
@@ -107,7 +109,7 @@ public class DataBaseRepository implements Repository {
                 if (cursor.getCount() > 0){
                     while (cursor.moveToNext()){
                         String price = cursor.getString(columnPrice);
-
+                        price = numberFormat(price);
                         listPrice.add(price);
                     }
                 }

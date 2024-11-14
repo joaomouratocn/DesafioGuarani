@@ -2,9 +2,14 @@ package br.com.devjmcn.desafioguarani.presenter.home.presentation;
 
 import static br.com.devjmcn.desafioguarani.presenter.home.HomeContract.HomeViewContract;
 
+import java.util.Collections;
+import java.util.List;
+
 import javax.inject.Inject;
 
+import br.com.devjmcn.desafioguarani.R;
 import br.com.devjmcn.desafioguarani.model.Repository;
+import br.com.devjmcn.desafioguarani.model.models.Product;
 import br.com.devjmcn.desafioguarani.presenter.home.HomeContract;
 import io.reactivex.rxjava3.disposables.Disposable;
 
@@ -31,24 +36,29 @@ public class HomePresenter implements HomeContract.HomePresenterContract {
     }
 
     @Override
-    public void getProdStatus() {
+    public void loadProductStatus() {
         disposable = repository.getProductStatus().subscribe(
                 prodStatus -> {
                     homeViewContract.loadProdStatus(prodStatus);
                 },
                 throwable -> {
                     homeViewContract.showToast(throwable.getMessage());
+                }
+        );
+    }
+
+    @Override
+    public void searchProduct(String search, String selectedStatus) {
+        homeViewContract.showLoad(true);
+        disposable = repository.getProductsByName(selectedStatus, search).subscribe(
+                products -> {
+                    homeViewContract.setProducts(products);
+                },
+                throwable -> {
+                    homeViewContract.showToast(throwable.getMessage());
                 },
                 () -> {
-                    String selectedStatus = homeViewContract.getStatusSelected();
-                    disposable = repository.getProductsByName(selectedStatus, "").subscribe(
-                        products -> {
-                            homeViewContract.setProducts(products);
-                        },
-                        throwable -> {
-                            homeViewContract.showToast(throwable.getMessage());
-                        }
-                    );
+                    homeViewContract.showLoad(false);
                 }
         );
     }
