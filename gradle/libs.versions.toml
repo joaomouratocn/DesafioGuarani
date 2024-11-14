@@ -12,6 +12,7 @@ constraintlayout = "2.2.0"
 rxjava = "3.1.5"
 rxandroid = "3.0.0"
 sqlite = "2.4.0"
+viewpager2 = "1.0.0"
 
 [libraries]
 drawerlayout = { module = "androidx.drawerlayout:drawerlayout", version.ref = "drawerlayout" }
@@ -27,6 +28,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 rxandroid = { module = "io.reactivex.rxjava3:rxandroid", version.ref = "rxandroid" }
 rxjava = { module = "io.reactivex.rxjava3:rxjava", version.ref = "rxjava" }
 sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
+viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

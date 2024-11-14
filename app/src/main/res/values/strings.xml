@@ -21,4 +21,12 @@
     <string name="str_home">Home</string>
     <string name="str_clients">Clients</string>
     <string name="str_guarani_sistemas">Guarani Sistemas</string>
+    <string name="str_cnpj">CNPJ</string>
+    <string name="str_cpf">CPF</string>
+    <string name="str_clients_consult">Clients consult</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="str_register_client">Register Client</string>
+    <string name="str_search_clients">Search clients</string>
+    <string name="str_select_type_products">Select type products</string>
 </resources>

@@ -35,6 +35,7 @@ import br.com.devjmcn.desafioguarani.databinding.ActivityHomeBinding;
 import br.com.devjmcn.desafioguarani.databinding.DialogPriceBinding;
 import br.com.devjmcn.desafioguarani.model.models.Product;
 import br.com.devjmcn.desafioguarani.presenter.clients.presentation.ClientsActivity;
+import br.com.devjmcn.desafioguarani.presenter.clients.presentation.ConsultClientsActivity;
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -61,9 +62,12 @@ public class HomeActivity extends AppCompatActivity implements HomeViewContract 
     }
 
     private void initConfig() {
-        binding.navigationView.setNavigationItemSelectedListener(menuItem -> {
+        binding.naviHome.setNavigationItemSelectedListener(menuItem -> {
             if (menuItem.getItemId() == R.id.nav_clients) {
                 Intent intent = new Intent(HomeActivity.this, ClientsActivity.class);
+                startActivity(intent);
+            }else if(menuItem.getItemId() == R.id.nav_clients_consult){
+                Intent intent = new Intent(HomeActivity.this, ConsultClientsActivity.class);
                 startActivity(intent);
             }
             binding.drawerLayout.closeDrawer(GravityCompat.START);
@@ -71,9 +75,9 @@ public class HomeActivity extends AppCompatActivity implements HomeViewContract 
         });
 
 
-        setSupportActionBar(binding.tlbClient);
-        binding.tlbClient.setNavigationIcon(R.drawable.menu_line);
-        binding.tlbClient.setNavigationOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
+        setSupportActionBar(binding.tlbHome);
+        binding.tlbHome.setNavigationIcon(R.drawable.menu_line);
+        binding.tlbHome.setNavigationOnClickListener(v -> binding.drawerLayout.openDrawer(GravityCompat.START));
 
         binding.btnSearch.setOnClickListener(view -> {
             if (binding.edtSearchProduct.getText().toString().isEmpty()) {

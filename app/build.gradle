@@ -48,6 +48,9 @@ dependencies {
     implementation libs.rxandroid
     //NAVIGATION DRAWER
     implementation libs.drawerlayout
+    //VIEW-PAGER
+    implementation 'androidx.viewpager2:viewpager2:1.0.0' // Para o ViewPager2
+    implementation 'androidx.fragment:fragment-ktx:1.5.7' // Para usar fragmentos com o ViewPager2
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
